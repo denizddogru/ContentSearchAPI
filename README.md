@@ -181,6 +181,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => { /* configuration */ });
 ```
 
+### NUnit & Moq
+Use NUnit and Moq for unit testing capabilities
+
 ### Polly (Resilience)
 ```csharp
 builder.Services.AddHttpClient()
