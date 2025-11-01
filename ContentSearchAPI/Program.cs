@@ -24,7 +24,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Enum'ları string olarak serialize et (Swagger için)
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -81,14 +87,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 app.UseMiddleware<GlobalExceptionHandler>();
 
-if (app.Environment.IsDevelopment())
+// Swagger her zaman açık
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Content Search API V1");
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Content Search API V1");
+    c.RoutePrefix = string.Empty; // Swagger root path'te açılsın (/)
+});
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
@@ -103,6 +108,24 @@ app.MapHealthChecks("/health");
 try
 {
     Log.Information("Starting Content Search API");
+
+    // Seed database with sample data
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DatabaseSeeder>>();
+
+        try
+        {
+            var seeder = new DatabaseSeeder(context, logger);
+            await seeder.SeedAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while seeding the database");
+        }
+    }
+
     app.Run();
 }
 catch (Exception ex)

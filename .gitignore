@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /ContentSearchAPI/CLAUDE.md
+/.claude
+/ARCHITECTURE.md
