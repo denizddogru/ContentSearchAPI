@@ -38,23 +38,23 @@ dotnet run --project ContentSearchAPI
 
 After running the application, you can access:
 
-- **🎨 Dashboard (Web UI):** `https://localhost:5003/`
+- **Dashboard (Web UI):** `https://localhost:5003/`
   - Interactive Razor Pages interface
   - Search, filter, and view content
   - Detailed scoring breakdowns
   - Responsive design
 
-- **📚 Swagger API Documentation:** `https://localhost:5003/swagger`
+- **Swagger API Documentation:** `https://localhost:5003/swagger`
   - Complete API documentation
   - Interactive testing capabilities
   - Try out all endpoints
 
-- **🔌 API Base URL:** `https://localhost:5003/api`
+- **API Base URL:** `https://localhost:5003/api`
   - RESTful API endpoints
   - Search: `/api/contents/search`
   - Get by ID: `/api/contents/{id}`
 
-- **❤️ Health Check:** `https://localhost:5003/health`
+- **Health Check:** `https://localhost:5003/health`
   - Application health status
   - Database connectivity check
 
