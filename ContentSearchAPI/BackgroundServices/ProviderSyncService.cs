@@ -24,14 +24,31 @@ public class ProviderSyncService : BackgroundService
             try
             {
                 await SyncProvidersAsync(stoppingToken);
+                await Task.Delay(_syncInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when application is shutting down
+                _logger.LogInformation("Provider Sync Service is stopping");
+                break;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while syncing providers");
-            }
 
-            await Task.Delay(_syncInterval, stoppingToken);
+                // Wait a bit before retrying on error (but shorter interval)
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
         }
+
+        _logger.LogInformation("Provider Sync Service has stopped");
     }
 
     private async Task SyncProvidersAsync(CancellationToken cancellationToken)

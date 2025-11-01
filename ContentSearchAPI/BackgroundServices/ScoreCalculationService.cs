@@ -24,14 +24,31 @@ public class ScoreCalculationService : BackgroundService
             try
             {
                 await RecalculateScoresAsync(stoppingToken);
+                await Task.Delay(_calculationInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when application is shutting down
+                _logger.LogInformation("Score Calculation Service is stopping");
+                break;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while recalculating scores");
-            }
 
-            await Task.Delay(_calculationInterval, stoppingToken);
+                // Wait a bit before retrying on error (but shorter interval)
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(10), stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
         }
+
+        _logger.LogInformation("Score Calculation Service has stopped");
     }
 
     private async Task RecalculateScoresAsync(CancellationToken cancellationToken)

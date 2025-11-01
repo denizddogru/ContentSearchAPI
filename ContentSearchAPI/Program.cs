@@ -31,6 +31,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
+// Add Razor Pages for Dashboard
+builder.Services.AddRazorPages();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -92,7 +95,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Content Search API V1");
-    c.RoutePrefix = string.Empty; // Swagger root path'te açılsın (/)
+    c.RoutePrefix = "swagger"; // Swagger'ı /swagger path'ine taşı
 });
 
 app.UseHttpsRedirection();
@@ -102,6 +105,11 @@ app.UseCors("AllowAll");
 app.UseSerilogRequestLogging();
 
 app.UseAuthorization();
+
+// Map Razor Pages (Dashboard)
+app.MapRazorPages();
+
+// Map API Controllers
 app.MapControllers();
 app.MapHealthChecks("/health");
 

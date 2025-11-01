@@ -23,14 +23,31 @@ public class CacheRefreshService : BackgroundService
             try
             {
                 await RefreshCacheAsync(stoppingToken);
+                await Task.Delay(_refreshInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when application is shutting down
+                _logger.LogInformation("Cache Refresh Service is stopping");
+                break;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while refreshing cache");
-            }
 
-            await Task.Delay(_refreshInterval, stoppingToken);
+                // Wait a bit before retrying on error (but shorter interval)
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
         }
+
+        _logger.LogInformation("Cache Refresh Service has stopped");
     }
 
     private async Task RefreshCacheAsync(CancellationToken cancellationToken)
