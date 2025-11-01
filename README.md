@@ -6,6 +6,8 @@
 
 Multi-provider content aggregation, scoring, and search engine service built on .NET 9.0 with Clean Architecture principles.
 
+**As the project is started, after the db is set the tables will be populated with mock data. Follow the steps below for accessing rest endpoints and the dashboard UI**
+
 ## Quick Start
 
 ### Prerequisites
